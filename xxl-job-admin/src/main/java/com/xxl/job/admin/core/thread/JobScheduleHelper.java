@@ -35,7 +35,7 @@ public class JobScheduleHelper {
 
     public void start(){
 
-        // schedule thread
+        // 调度线程
         scheduleThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -51,7 +51,7 @@ public class JobScheduleHelper {
 
                 while (!scheduleThreadToStop) {
 
-                    // Scan Job
+                    // 扫描作业
                     long start = System.currentTimeMillis();
 
                     Connection conn = null;
@@ -65,6 +65,7 @@ public class JobScheduleHelper {
                         connAutoCommit = conn.getAutoCommit();
                         conn.setAutoCommit(false);
 
+                        //for update jiale一个锁
                         preparedStatement = conn.prepareStatement(  "select * from xxl_job_lock where lock_name = 'schedule_lock' for update" );
                         preparedStatement.execute();
 

@@ -52,7 +52,7 @@ public class XxlJobScheduler implements InitializingBean, DisposableBean {
         // 管理员注册表监视器运行  这个实际上就监视执行器的注册的情况  删除已经失效的执行器   加载新注册的执行器
         JobRegistryMonitorHelper.getInstance().start();
 
-        // 管理员监控运行
+        // 管理员监控运行  有失败的重试发邮件
         JobFailMonitorHelper.getInstance().start();
 
         // 管理服务器
