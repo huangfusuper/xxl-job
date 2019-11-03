@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
+ * 这个类一定是个重点   因为他在整个Spring容器 启动的时候初始化了几条监视线程
+ * 猜测监视的是数据库    那些任务
  * @author xuxueli 2018-10-28 00:18:17
  */
 @Component
@@ -38,22 +40,25 @@ import java.util.concurrent.ConcurrentMap;
 public class XxlJobScheduler implements InitializingBean, DisposableBean {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobScheduler.class);
 
-
+    /**
+     * 在类的初始化之后   分别运行了四条监视线程
+     * @throws Exception
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         // init i18n
         initI18n();
 
-        // admin registry monitor run
+        // 管理员注册表监视器运行  这个实际上就监视执行器的注册的情况  删除已经失效的执行器   加载新注册的执行器
         JobRegistryMonitorHelper.getInstance().start();
 
-        // admin monitor run
+        // 管理员监控运行
         JobFailMonitorHelper.getInstance().start();
 
-        // admin-server
+        // 管理服务器
         initRpcProvider();
 
-        // start-schedule
+        // 开始时间表
         JobScheduleHelper.getInstance().start();
 
         logger.info(">>>>>>>>> init xxl-job admin success.");

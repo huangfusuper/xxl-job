@@ -20,6 +20,7 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
 
     @Override
     public void start() throws Exception {
+        System.out.println("--------------ApplicationContextAware-------Spring容器启动----------------------");
 
         // init JobHandler Repository
         initJobHandlerRepository(applicationContext);
@@ -38,6 +39,7 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
         }
 
         // init job handler action
+        //从所有的bean中 获取到所有的 JobHandler 附加这个注解的类
         Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(JobHandler.class);
 
         if (serviceBeanMap!=null && serviceBeanMap.size()>0) {

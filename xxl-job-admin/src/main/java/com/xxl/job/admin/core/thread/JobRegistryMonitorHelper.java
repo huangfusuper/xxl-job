@@ -33,22 +33,25 @@ public class JobRegistryMonitorHelper {
 			public void run() {
 				while (!toStop) {
 					try {
-						// auto registry group
+						// 自动注册表组  执行器地址类型：0=自动注册、1=手动录入
 						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
 						if (groupList!=null && !groupList.isEmpty()) {
 
-							// remove dead address (admin/executor)
+							// 查询无效地址（管理员/执行者）
 							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT);
+							//删除无效地址（管理员/执行者）
 							if (ids!=null && ids.size()>0) {
 								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
 							}
 
-							// fresh online address (admin/executor)
+							// 新的在线地址（管理员/执行者）
 							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
+							//不用深究   这个就是将新注册的执行器注册上来的
 							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT);
 							if (list != null) {
 								for (XxlJobRegistry item: list) {
 									if (RegistryConfig.RegistType.EXECUTOR.name().equals(item.getRegistryGroup())) {
+										//拿到这个注册的appname
 										String appName = item.getRegistryKey();
 										List<String> registryList = appAddressMap.get(appName);
 										if (registryList == null) {
@@ -58,12 +61,13 @@ public class JobRegistryMonitorHelper {
 										if (!registryList.contains(item.getRegistryValue())) {
 											registryList.add(item.getRegistryValue());
 										}
+										//就是将appname 和  整个的执行器上的执行机映射起来
 										appAddressMap.put(appName, registryList);
 									}
 								}
 							}
 
-							// fresh group address
+							// 新组地址
 							for (XxlJobGroup group: groupList) {
 								List<String> registryList = appAddressMap.get(group.getAppName());
 								String addressListStr = null;
