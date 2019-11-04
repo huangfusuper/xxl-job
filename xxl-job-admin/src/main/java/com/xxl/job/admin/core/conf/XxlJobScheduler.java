@@ -1,5 +1,8 @@
 package com.xxl.job.admin.core.conf;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.xxl.job.admin.core.thread.JobFailMonitorHelper;
 import com.xxl.job.admin.core.thread.JobRegistryMonitorHelper;
 import com.xxl.job.admin.core.thread.JobScheduleHelper;
@@ -27,17 +30,22 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * 这个类一定是个重点   因为他在整个Spring容器 启动的时候初始化了几条监视线程
  * 猜测监视的是数据库    那些任务
+ * xxlJobAdminConfig先于本实例的实例化 {@link org.springframework.context.annotation.DependsOn}
  * @author xuxueli 2018-10-28 00:18:17
  */
 @Component
 @DependsOn("xxlJobAdminConfig")
 public class XxlJobScheduler implements InitializingBean, DisposableBean {
+
+
     private static final Logger logger = LoggerFactory.getLogger(XxlJobScheduler.class);
 
     /**
@@ -52,7 +60,7 @@ public class XxlJobScheduler implements InitializingBean, DisposableBean {
         // 管理员注册表监视器运行  这个实际上就监视执行器的注册的情况  删除已经失效的执行器   加载新注册的执行器
         JobRegistryMonitorHelper.getInstance().start();
 
-        // 管理员监控运行  有失败的重试发邮件
+        // 管理员监控运行  根据日志表 有失败的重试发邮件
         JobFailMonitorHelper.getInstance().start();
 
         // 管理服务器

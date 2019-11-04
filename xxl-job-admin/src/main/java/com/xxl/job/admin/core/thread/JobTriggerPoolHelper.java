@@ -38,7 +38,7 @@ public class JobTriggerPoolHelper {
             100,
             60L,
             TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(2000),
+            new LinkedBlockingQueue<Runnable>(2000), //LinkedBlockingQueue 不指定容量就变成了无界队列
             new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable r) {
@@ -53,18 +53,20 @@ public class JobTriggerPoolHelper {
 
 
     /**
-     * add trigger
+     * 这个是真正添加了一个触发器，同时他会计算相同任务多次运行所用时间 从而将阈值超过500毫秒的数据使用慢速线程池
+     * 添加触发器
      */
     public void addTrigger(final int jobId, final TriggerTypeEnum triggerType, final int failRetryCount, final String executorShardingParam, final String executorParam) {
 
-        // choose thread pool
+        // 选择线程池
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
         AtomicInteger jobTimeoutCount = jobTimeoutCountMap.get(jobId);
-        if (jobTimeoutCount!=null && jobTimeoutCount.get() > 10) {      // job-timeout 10 times in 1 min
+        // 1分钟内超时10次
+        if (jobTimeoutCount!=null && jobTimeoutCount.get() > 10) {
             triggerPool_ = slowTriggerPool;
         }
 
-        // trigger
+        // trigger  开始使用线程池进行触发操作
         triggerPool_.execute(new Runnable() {
             @Override
             public void run() {
@@ -72,7 +74,7 @@ public class JobTriggerPoolHelper {
                 long start = System.currentTimeMillis();
 
                 try {
-                    // do trigger
+                    // do trigger  触发
                     XxlJobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -85,12 +87,18 @@ public class JobTriggerPoolHelper {
                         jobTimeoutCountMap.clear();
                     }
 
-                    // incr timeout-count-map
+                    // 增加超时计数图
                     long cost = System.currentTimeMillis()-start;
-                    if (cost > 500) {       // ob-timeout threshold 500ms
+                    /**
+                     * ob-timeout threshold 500ms  处理时间大约500ms
+                     * 这里 当处理的时间大于500毫秒的情况下  会选择使用慢速的线程池
+                     */
+                    if (cost > 500) {
+                        //putIfAbsent 存在相同的key就返回当前的value不插入  不存在就插入并返回null
                         AtomicInteger timeoutCount = jobTimeoutCountMap.putIfAbsent(jobId, new AtomicInteger(1));
                         if (timeoutCount != null) {
-                            timeoutCount.incrementAndGet();
+                                //加一
+                                timeoutCount.incrementAndGet();
                         }
                     }
 

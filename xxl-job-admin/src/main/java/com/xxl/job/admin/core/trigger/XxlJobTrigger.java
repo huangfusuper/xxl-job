@@ -31,15 +31,15 @@ public class XxlJobTrigger {
      * @param jobId
      * @param triggerType
      * @param failRetryCount
-     * 			>=0: use this param
-     * 			<0: use param from job info config
+     * 			>=0: 使用这个参数
+     * 			<0: 使用作业信息配置中的参数
      * @param executorShardingParam
      * @param executorParam
-     *          null: use job param
-     *          not null: cover job param
+     *          null: 使用工作参数
+     *          not null: 掩护工作参数
      */
     public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
-        // load data
+        // load data  查询这个任务的详情
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
         if (jobInfo == null) {
             logger.warn(">>>>>>>>>>>> trigger fail, jobId invalid，jobId={}", jobId);
@@ -49,9 +49,10 @@ public class XxlJobTrigger {
             jobInfo.setExecutorParam(executorParam);
         }
         int finalFailRetryCount = failRetryCount>=0?failRetryCount:jobInfo.getExecutorFailRetryCount();
+        //获取到该任务所在的执行器
         XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup());
 
-        // sharding param
+        // 分片参数
         int[] shardingParam = null;
         if (executorShardingParam!=null){
             String[] shardingArr = executorShardingParam.split("/");

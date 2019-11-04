@@ -1172,22 +1172,22 @@ public final class CronExpression implements Serializable, Cloneable {
 
     public Date getTimeAfter(Date afterTime) {
 
-        // Computation is based on Gregorian year only.
+        // 计算仅基于公历年份。
         Calendar cl = new java.util.GregorianCalendar(getTimeZone()); 
 
-        // move ahead one second, since we're computing the time *after* the
-        // given time
+        // 向前移动一秒钟，因为我们正在计算*之后*的时间
+        // 给定时间
         afterTime = new Date(afterTime.getTime() + 1000);
-        // CronTrigger does not deal with milliseconds
+        // CronTrigger不处理毫秒
         cl.setTime(afterTime);
         cl.set(Calendar.MILLISECOND, 0);
 
         boolean gotOne = false;
-        // loop until we've computed the next time, or we've past the endTime
+        // 循环直到下一次计算，或者我们过去了endTime
         while (!gotOne) {
 
             //if (endTime != null && cl.getTime().after(endTime)) return null;
-            if(cl.get(Calendar.YEAR) > 2999) { // prevent endless loop...
+            if(cl.get(Calendar.YEAR) > 2999) { // 防止无限循环...
                 return null;
             }
 
