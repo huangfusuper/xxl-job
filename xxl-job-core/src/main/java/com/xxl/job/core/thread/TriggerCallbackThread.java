@@ -64,12 +64,12 @@ public class TriggerCallbackThread {
                         HandleCallbackParam callback = getInstance().callBackQueue.take();
                         if (callback != null) {
 
-                            // callback list param
+                            // 回调列表参数
                             List<HandleCallbackParam> callbackParamList = new ArrayList<HandleCallbackParam>();
                             int drainToNum = getInstance().callBackQueue.drainTo(callbackParamList);
                             callbackParamList.add(callback);
 
-                            // callback, will retry if error
+                            //回调，如果出错将重试
                             if (callbackParamList!=null && callbackParamList.size()>0) {
                                 doCallback(callbackParamList);
                             }
@@ -155,12 +155,12 @@ public class TriggerCallbackThread {
     }
 
     /**
-     * do callback, will retry if error
+     * 进行回调，如果发生错误将重试
      * @param callbackParamList
      */
     private void doCallback(List<HandleCallbackParam> callbackParamList){
         boolean callbackRet = false;
-        // callback, will retry if error
+        // 回调，如果出错将重试
         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
             try {
                 ReturnT<String> callbackResult = adminBiz.callback(callbackParamList);

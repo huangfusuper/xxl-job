@@ -132,12 +132,14 @@ public class JobThread extends Thread{
 							FutureTask<ReturnT<String>> futureTask = new FutureTask<ReturnT<String>>(new Callable<ReturnT<String>>() {
 								@Override
 								public ReturnT<String> call() throws Exception {
+									//这是去执行了一下
 									return handler.execute(triggerParamTmp.getExecutorParams());
 								}
 							});
 							futureThread = new Thread(futureTask);
+							//启动执行线程
 							futureThread.start();
-
+							//规定返回值时间
 							executeResult = futureTask.get(triggerParam.getExecutorTimeout(), TimeUnit.SECONDS);
 						} catch (TimeoutException e) {
 
@@ -149,7 +151,7 @@ public class JobThread extends Thread{
 							futureThread.interrupt();
 						}
 					} else {
-						// just execute
+						// 只是执行
 						executeResult = handler.execute(triggerParam.getExecutorParams());
 					}
 
@@ -186,7 +188,7 @@ public class JobThread extends Thread{
                 if(triggerParam != null) {
                     // callback handler info
                     if (!toStop) {
-                        // commonm
+                        // 共同点
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(triggerParam.getLogId(), triggerParam.getLogDateTim(), executeResult));
                     } else {
                         // is killed
@@ -201,7 +203,7 @@ public class JobThread extends Thread{
 		while(triggerQueue !=null && triggerQueue.size()>0){
 			TriggerParam triggerParam = triggerQueue.poll();
 			if (triggerParam!=null) {
-				// is killed
+				// 被杀死
 				ReturnT<String> stopResult = new ReturnT<String>(ReturnT.FAIL_CODE, stopReason + " [job not executed, in the job queue, killed.]");
 				TriggerCallbackThread.pushCallBack(new HandleCallbackParam(triggerParam.getLogId(), triggerParam.getLogDateTim(), stopResult));
 			}
