@@ -26,7 +26,7 @@ public class ScriptJobHandler extends IJobHandler {
         this.gluesource = gluesource;
         this.glueType = glueType;
 
-        // clean old script file
+        // 清理旧脚本文件
         File glueSrcPath = new File(XxlJobFileAppender.getGlueSrcPath());
         if (glueSrcPath.exists()) {
             File[] glueSrcFileList = glueSrcPath.listFiles();

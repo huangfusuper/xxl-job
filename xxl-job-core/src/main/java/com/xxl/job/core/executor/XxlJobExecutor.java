@@ -64,27 +64,32 @@ public class XxlJobExecutor  {
     }
 
 
-    // ---------------------- start + stop ----------------------
+    // ---------------------- 开始+停止----------------------
     public void start() throws Exception {
 
-        // init logpath
+        // 初始化日志路径
         XxlJobFileAppender.initLogPath(logPath);
 
-        // init invoker, admin-client
+        // 初始化调用者，管理客户端
         initAdminBizList(adminAddresses, accessToken);
 
 
-        // init JobLogFileCleanThread
+        // 初始化作业日志文件清理线程
         JobLogFileCleanThread.getInstance().start(logRetentionDays);
 
-        // init TriggerCallbackThread
+        // 初始化触发回调线程
         TriggerCallbackThread.getInstance().start();
 
-        // init executor-server
+        // 初始化执行服务器
         port = port>0?port: NetUtil.findAvailablePort(9999);
         ip = (ip!=null&&ip.trim().length()>0)?ip: IpUtil.getIp();
         initRpcProvider(ip, port, appName, accessToken);
     }
+
+
+    /**
+     * com.xxl.job.executor.core.config.XxlJobConfig#xxlJobExecutor() 被调用
+     */
     public void destroy(){
         // destory executor-server
         stopRpcProvider();
@@ -223,7 +228,9 @@ public class XxlJobExecutor  {
     }
 
 
-    // ---------------------- job handler repository ----------------------
+    /**
+     * 作业处理程序存储库   这个是本地java的存储库
+     */
     private static ConcurrentMap<String, IJobHandler> jobHandlerRepository = new ConcurrentHashMap<String, IJobHandler>();
     public static IJobHandler registJobHandler(String name, IJobHandler jobHandler){
         logger.info(">>>>>>>>>>> xxl-job register jobhandler success, name:{}, jobHandler:{}", name, jobHandler);
@@ -234,9 +241,15 @@ public class XxlJobExecutor  {
     }
 
 
-    // ---------------------- job thread repository ----------------------
+    /**
+     * 作业线程存储库   这个   卧槽  是远程数据的处理程序  远程java的处理程序
+     */
     private static ConcurrentMap<Integer, JobThread> jobThreadRepository = new ConcurrentHashMap<Integer, JobThread>();
+    /**
+     * 我猜的  这里应该是注册线程的    jobId  :   newJobThread
+     */
     public static JobThread registJobThread(int jobId, IJobHandler handler, String removeOldReason){
+        //其实是这里根据任务id 和执行的handler 创建了一条线程
         JobThread newJobThread = new JobThread(jobId, handler);
         newJobThread.start();
         logger.info(">>>>>>>>>>> xxl-job regist JobThread success, jobId:{}, handler:{}", new Object[]{jobId, handler});
@@ -256,6 +269,12 @@ public class XxlJobExecutor  {
             oldJobThread.interrupt();
         }
     }
+
+    /**
+     * 根据jobId获取任务线程
+     * @param jobId
+     * @return
+     */
     public static JobThread loadJobThread(int jobId){
         JobThread jobThread = jobThreadRepository.get(jobId);
         return jobThread;

@@ -35,4 +35,9 @@ public class DemoJobHandler extends IJobHandler {
 		return SUCCESS;
 	}
 
+
+	@Override
+	public void init() {
+		XxlJobLogger.log("线程初始化");
+	}
 }

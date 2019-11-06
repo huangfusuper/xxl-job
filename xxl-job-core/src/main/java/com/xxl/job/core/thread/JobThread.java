@@ -21,7 +21,7 @@ import java.util.concurrent.*;
 
 
 /**
- * handler thread
+ * 处理程序线程
  * @author xuxueli 2016-1-16 19:52:47
  */
 public class JobThread extends Thread{
@@ -50,7 +50,7 @@ public class JobThread extends Thread{
 	}
 
     /**
-     * new trigger to queue
+     * 要排队的新触发器
      *
      * @param triggerParam
      * @return
@@ -68,7 +68,7 @@ public class JobThread extends Thread{
 	}
 
     /**
-     * kill job thread
+     * 杀死工作线程
      *
      * @param stopReason
      */
@@ -83,7 +83,7 @@ public class JobThread extends Thread{
 	}
 
     /**
-     * is running job
+     * 正在工作
      * @return
      */
     public boolean isRunningOrHasQueue() {
@@ -108,7 +108,8 @@ public class JobThread extends Thread{
             TriggerParam triggerParam = null;
             ReturnT<String> executeResult = null;
             try {
-				// to check toStop signal, we need cycle, so wo cannot use queue.take(), instand of poll(timeout)
+            	//https://blog.csdn.net/taobaoge123/article/details/71321455
+				// 要检查toStop信号，我们需要循环，所以我们不能使用queue.take（）来理解poll（timeout） poll: 若队列为空，返回null。
 				triggerParam = triggerQueue.poll(3L, TimeUnit.SECONDS);
 				if (triggerParam!=null) {
 					running = true;
@@ -196,7 +197,7 @@ public class JobThread extends Thread{
             }
         }
 
-		// callback trigger request in queue
+		// 队列中的回调触发请求
 		while(triggerQueue !=null && triggerQueue.size()>0){
 			TriggerParam triggerParam = triggerQueue.poll();
 			if (triggerParam!=null) {

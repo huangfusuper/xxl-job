@@ -38,6 +38,10 @@ public class XxlJobConfig {
     private int logRetentionDays;
 
 
+    /**
+     * 这里在进行初始化的时候会调用对应的 start 方法  和  destroy方法
+     * @return
+     */
     @Bean(initMethod = "start", destroyMethod = "destroy")
     public XxlJobSpringExecutor xxlJobExecutor() {
         logger.info(">>>>>>>>>>> xxl-job config init.");

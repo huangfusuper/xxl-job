@@ -11,21 +11,25 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.Map;
 
 /**
- * xxl-job executor (for spring)
+ * xxl-job executor（春季）
  *
  * @author xuxueli 2018-11-01 09:24:52
  */
 public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationContextAware {
 
 
+    /**
+     * com.xxl.job.executor.core.config.XxlJobConfig#xxlJobExecutor()被调用
+     * @throws Exception
+     */
     @Override
     public void start() throws Exception {
         System.out.println("--------------ApplicationContextAware-------Spring容器启动----------------------");
 
-        // init JobHandler Repository
+        // 初始化JobHandler存储库
         initJobHandlerRepository(applicationContext);
 
-        // refresh GlueFactory
+        // 刷新GlueFactory
         GlueFactory.refreshInstance(1);
 
 
@@ -60,7 +64,7 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
     private static ApplicationContext applicationContext;
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+        XxlJobSpringExecutor.applicationContext = applicationContext;
     }
     public static ApplicationContext getApplicationContext() {
         return applicationContext;

@@ -37,9 +37,9 @@ public class GlueFactory {
 	private ConcurrentMap<String, Class<?>> CLASS_CACHE = new ConcurrentHashMap<>();
 
 	/**
-	 * load new instance, prototype
-	 *
-	 * @param codeSource
+	 * 加载新实例，原型
+	 * 这里就是本地类加载器 然后创建类对象  返回实例
+	 * @param codeSource  代码
 	 * @return
 	 * @throws Exception
 	 */

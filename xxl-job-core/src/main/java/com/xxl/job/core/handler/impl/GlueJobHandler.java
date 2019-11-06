@@ -20,6 +20,12 @@ public class GlueJobHandler extends IJobHandler {
 		return glueUpdatetime;
 	}
 
+	/**
+	 * 这里好像是一个代理
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public ReturnT<String> execute(String param) throws Exception {
 		XxlJobLogger.log("----------- glue.version:"+ glueUpdatetime +" -----------");

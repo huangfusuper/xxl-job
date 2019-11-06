@@ -32,12 +32,12 @@ public abstract class IJobHandler {
 	 * init handler, invoked when JobThread init
 	 */
 	public void init() {
-		// do something
+		// 做一点事
 	}
 
 
 	/**
-	 * destroy handler, invoked when JobThread destroy
+	 * 销毁处理程序，在JobThread销毁时调用
 	 */
 	public void destroy() {
 		// do something
