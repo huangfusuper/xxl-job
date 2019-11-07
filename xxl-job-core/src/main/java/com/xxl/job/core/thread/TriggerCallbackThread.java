@@ -61,11 +61,19 @@ public class TriggerCallbackThread {
                 // normal callback
                 while(!toStop){
                     try {
+                        /**
+                         * poll -->【若队列为空，返回null】
+                         *
+                         * remove >【若队列为空，抛出NoSuchElementException异常】
+                         *
+                         * take -->【若队列为空，发生阻塞，等待有元素】
+                         */
                         HandleCallbackParam callback = getInstance().callBackQueue.take();
                         if (callback != null) {
 
                             // 回调列表参数
                             List<HandleCallbackParam> callbackParamList = new ArrayList<HandleCallbackParam>();
+                            //drainTo是批量获取，为空不阻塞
                             int drainToNum = getInstance().callBackQueue.drainTo(callbackParamList);
                             callbackParamList.add(callback);
 

@@ -151,10 +151,11 @@ public class JobThread extends Thread{
 							futureThread.interrupt();
 						}
 					} else {
-						// 只是执行
+						// 只是执行  这是没有设置超时时间的情况下
 						executeResult = handler.execute(triggerParam.getExecutorParams());
 					}
 
+					//设置一个返回的信息
 					if (executeResult == null) {
 						executeResult = IJobHandler.FAIL;
 					} else {
@@ -162,7 +163,8 @@ public class JobThread extends Thread{
 								(executeResult!=null&&executeResult.getMsg()!=null&&executeResult.getMsg().length()>50000)
 										?executeResult.getMsg().substring(0, 50000).concat("...")
 										:executeResult.getMsg());
-						executeResult.setContent(null);	// limit obj size
+						// 限制obj大小
+						executeResult.setContent(null);
 					}
 					XxlJobLogger.log("<br>----------- xxl-job job execute end(finish) -----------<br>----------- ReturnT:" + executeResult);
 
@@ -186,12 +188,12 @@ public class JobThread extends Thread{
 				XxlJobLogger.log("<br>----------- JobThread Exception:" + errorMsg + "<br>----------- xxl-job job execute end(error) -----------");
 			} finally {
                 if(triggerParam != null) {
-                    // callback handler info
+                    // 回调处理程序信息  没有停的情况  这个阶段暂时不提   TODO  这个一会回来要看
                     if (!toStop) {
-                        // 共同点
+                        // 共同点  如果线程没有停止的话   会传入任务ID  日志ID   运行结果 HandleCallbackParam  就是一个回调实体
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(triggerParam.getLogId(), triggerParam.getLogDateTim(), executeResult));
                     } else {
-                        // is killed
+                        // 被杀死 TODO  这个一会回来要看
                         ReturnT<String> stopResult = new ReturnT<String>(ReturnT.FAIL_CODE, stopReason + " [job running，killed]");
                         TriggerCallbackThread.pushCallBack(new HandleCallbackParam(triggerParam.getLogId(), triggerParam.getLogDateTim(), stopResult));
                     }

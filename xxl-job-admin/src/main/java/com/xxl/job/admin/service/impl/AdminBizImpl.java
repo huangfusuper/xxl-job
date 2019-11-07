@@ -51,6 +51,11 @@ public class AdminBizImpl implements AdminBiz {
         return ReturnT.SUCCESS;
     }
 
+    /**
+     * 真正的回调触发  用户处理任务执行后的后续处理   比如结果返回    子任务执行等等
+     * @param handleCallbackParam
+     * @return
+     */
     private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
         // valid log item
         XxlJobLog log = xxlJobLogDao.load(handleCallbackParam.getLogId());
@@ -58,7 +63,8 @@ public class AdminBizImpl implements AdminBiz {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "log item not found.");
         }
         if (log.getHandleCode() > 0) {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback.");     // avoid repeat callback, trigger child job etc
+            // 避免重复回调，触发子作业等
+            return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback.");
         }
 
         // 触发成功，触发孩子的工作
